@@ -105,8 +105,9 @@ while (keepPlaying == 1):
 			chipTotal += int(currentBet * 1.5)
 	else:
 		cont = 1
+		dd = 0
 		while (cont == 1):
-			if (playerTotal == 21):
+			if (playerTotal == 21 or dd == 1):
 				decision = 's'
 			else:
 				print("Hit, Stand or Double Down? (type h for hit, s for stand, d for double down)")
@@ -130,7 +131,9 @@ while (keepPlaying == 1):
 				playerCards.append(d.take_top_card())
 				print ("Your Cards: " + str(playerCards))
 				playerTotal = calculate_hard_total(playerCards)
-				cont = 0
+				dd = 1
+				if (playerTotal > 21):
+					cont = 0
 			elif (decision == 's'):	
 				cont = 0
 				dealercont = 1
