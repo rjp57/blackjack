@@ -7,7 +7,7 @@ Features: . Dynamic hand values (aces can be either 1 or 11)
 		  . Dealer will Hit when his hand is less than 17. Stands on "soft 17"
 '''
 from random import shuffle
-
+import sys
 class deck:
 	cards = ['A','A','A','A', 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 'J', 'J', 'J', 'J', 'Q', 'Q', 'Q', 'Q', 'K', 'K', 'K', 'K']
 	count = 0
@@ -168,7 +168,7 @@ while (keepPlaying == 1):
 			chipTotal += currentBet
 	if (chipTotal == 0):
 		print("Looks like you ran out of chips. Oops")
-		exit
+		sys.exit(0)
 	print ("Cards left in deck: " + str(d.total_cards()))
 	print ("Chip Total: " + str(chipTotal))
 	print ("Current 'count': " + str(d.current_count()))
