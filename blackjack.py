@@ -1,4 +1,4 @@
-'''Simple 1 deck Blackjack game with just hits/staying. no Splitting or Insurance or Doubling down
+'''Simple 1 deck Blackjack game with just hit/stand/double down. no Splitting or Insurance.
 
 Features: . Dynamic hand values (aces can be either 1 or 11)
 		  . Actual deck tracking, meaning the deck does not shuffle between hands and the cards dealt are removed from it. Deck will shuffle when there are no more cards in it.
@@ -54,7 +54,8 @@ def calculate_hard_total(hand):
 					return total
 		
 	return total
-	
+
+chipTotal = 1000
 d = deck()
 d.shuffle_deck()
 keepPlaying = 1
@@ -64,7 +65,25 @@ while (keepPlaying == 1):
 	dealerTotal = 0
 	playerCards = []
 	dealerCards = []
+	currentBet = 0
+	dealerNatural = 0
 
+	print("Your current Chip total is: " + str(chipTotal))
+	print ("Enter the amount you want to bet")
+	
+	while (1):
+		try:
+			userInput = int(input())
+		except ValueError:
+			print("Enter a valid bet")
+			continue
+		if (isinstance(userInput, int) is False or userInput <= 0):
+			print("Enter a valid bet")
+		elif (chipTotal - userInput < 0):
+			print("You do not have enough chips to make that bet")
+		else:
+			currentBet = userInput
+			break
 
 	dealerCards.append(d.take_top_card())
 	playerCards.append(d.take_top_card())
@@ -82,19 +101,21 @@ while (keepPlaying == 1):
 		if (dealerTotal == 21):
 			print("Dealer also had a natural, so it is a Push")
 		else:
-			print("Dealer does not have a natural, you win!")
+			print("Dealer does not have a natural, you win! Payout is 3:2")
+			chipTotal += int(currentBet * 1.5)
 	else:
 		cont = 1
-	
 		while (cont == 1):
 			if (playerTotal == 21):
 				decision = 's'
 			else:
-				print("Hit or Stand? (type h for hit, s for stand)")
+				print("Hit, Stand or Double Down? (type h for hit, s for stand, d for double down)")
 				while(1):
 					decision = input()
-					if (decision != 'h' and decision != 's'):
-						print("Please enter h or s")
+					if (decision != 'h' and decision != 's' and decision != 'd'):
+						print("Please enter h or s or d")
+					elif (chipTotal - (currentBet * 2) < 0 and decision == 'd'):
+						print("You do not have enough chips to double down")
 					else:
 						break
 			if (decision == 'h'):
@@ -103,12 +124,21 @@ while (keepPlaying == 1):
 				playerTotal = calculate_hard_total(playerCards)
 				if (playerTotal > 21):
 					cont = 0
+			elif (decision == 'd'):
+				print("Doubling Down...")
+				currentBet = currentBet * 2
+				playerCards.append(d.take_top_card())
+				print ("Your Cards: " + str(playerCards))
+				playerTotal = calculate_hard_total(playerCards)
+				cont = 0
 			elif (decision == 's'):	
 				cont = 0
 				dealercont = 1
 				print("Dealer flips: has hand:" + str(dealerCards))
 				if (dealerTotal == 21):
 					print ("Dealer has a natural and you don't, so he wins")
+					chipTotal -= currentBet
+					dealerNatural = 1
 					dealercont = 0
 				while(dealercont == 1):
 					if (dealerTotal < 17):
@@ -124,18 +154,25 @@ while (keepPlaying == 1):
 	
 		if (playerTotal > 21):
 			print("You Busted!")
+			chipTotal -= currentBet
 		elif (dealerTotal > 21):
 			print("Dealer Busted, You win!")
-		elif (playerTotal == dealerTotal):
+			chipTotal += currentBet
+		elif (playerTotal == dealerTotal and dealerNatural == 0):
 			print("Push")
-		elif (playerTotal < dealerTotal):
+		elif (playerTotal < dealerTotal and dealerNatural == 0):
 			print("Dealer Wins")
+			chipTotal -= currentBet
 		else:
 			print("You win!")
-		
+			chipTotal += currentBet
+	if (chipTotal == 0):
+		print("Looks like you ran out of chips. Oops")
+		exit
 	print ("Cards left in deck: " + str(d.total_cards()))
+	print ("Chip Total: " + str(chipTotal))
 	print ("Current 'count': " + str(d.current_count()))
-	print("Keep playing? (y or n)")
+	print ("Keep playing? (y or n)")
 	
 	while(1):
 		yesOrNo = input()
@@ -144,6 +181,7 @@ while (keepPlaying == 1):
 			break
 		elif (yesOrNo == 'y'):
 			keepPlaying = 1
+			dealerNatural = 0
 			break
 		else:
 			print("Please enter y/n")
