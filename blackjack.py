@@ -166,6 +166,8 @@ while (keepPlaying == 1):
 		elif (playerTotal < dealerTotal and dealerNatural == 0):
 			print("Dealer Wins")
 			chipTotal -= currentBet
+		elif (dealerNatural == 1):
+			print("Dealer Wins")
 		else:
 			print("You win!")
 			chipTotal += currentBet
